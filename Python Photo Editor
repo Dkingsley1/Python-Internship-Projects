@@ -1,0 +1,39 @@
+# 1. Setup Folders
+input_folder = Path('./raw_photos')
+output_folder = Path('./finished_edits')
+
+input_folder.mkdir(exist_ok=True)
+output_folder.mkdir(exist_ok=True)
+
+# 2. Find images
+valid_ext = ['.jpg', '.jpeg', '.png', '.webp']
+image_files = [f for f in input_folder.iterdir() if f.suffix.lower() in valid_ext]
+
+if not image_files:
+    print(f"No images found in: {input_folder.absolute()}")
+else:
+    print(f"Processing {len(image_files)} images...")
+
+    for file_path in image_files:
+        try:
+            with Image.open(file_path) as img:
+                # --- THE CHANGES ARE HERE ---
+
+                # We keep Sharpen to make it crisp
+                edit = img.filter(ImageFilter.SHARPEN)
+
+                # I removed .convert('L') -> This keeps the COLOR
+                # I removed .rotate(-90) -> This keeps it VERTICAL (unless the original was horizontal)
+
+                # We keep Contrast to make the colors pop
+                edit = ImageEnhance.Contrast(edit).enhance(1.5)
+
+                # Save the file
+                save_path = output_folder / f"{file_path.stem}_edited.jpg"
+                edit.save(save_path)
+                print(f"✅ Success: {file_path.name} is now sharpened and in color!")
+
+        except Exception as e:
+            print(f"❌ Error with {file_path.name}: {e}")
+
+print("\n--- Done! Your photos should be color and upright now. ---")
