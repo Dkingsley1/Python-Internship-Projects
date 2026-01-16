@@ -1,0 +1,38 @@
+from pytube import YouTube
+from pathlib import Path
+import os
+
+# 1. Create the download folder automatically
+# This ensures you have a place for the video to land
+download_path = Path('./youtube_downloads')
+download_path.mkdir(exist_ok=True)
+
+# 2. Get the link directly from the user
+# This replaces the 'argv' method from the video to make it easier for you
+link = input("Paste your YouTube link here and press Enter: ")
+
+try:
+    # 3. Connect to the video
+    print("Connecting to YouTube...")
+    yt = YouTube(link)
+
+    # 4. Show video info in the console
+    print(f"--- Video Found ---")
+    print(f"Title: {yt.title}")
+    print(f"Views: {yt.views:,}") # Added a comma for easier reading
+
+    # 5. Download the highest resolution
+    print("Starting download... (This may take a minute)")
+    yd = yt.streams.get_highest_resolution()
+    
+    # We use .absolute() so you can see exactly where it's going
+    yd.download(output_path=str(download_path))
+
+    print(f"\n✅ SUCCESS!")
+    print(f"Your video is saved in: {download_path.absolute()}")
+
+except Exception as e:
+    print(f"❌ ERROR: Something went wrong. Make sure your link is correct.")
+    print(f"Technical error message: {e}")
+
+print("\n--- Task Finished ---")
