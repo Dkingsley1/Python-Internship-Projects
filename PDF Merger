@@ -1,0 +1,33 @@
+import PyPDF2
+import os
+from pathlib import Path
+
+# 1. Setup the merger object
+# This is the "container" that will hold your combined pages
+merger = PyPDF2.PdfMerger()
+
+# 2. Define where the files are
+# '.' means it looks in the same folder where your script is saved
+current_dir = Path('.')
+
+print("Scanning for PDF files...")
+
+# 3. Find and sort all PDF files in the folder
+# We sort them so they merge in alphabetical order (e.g., Page1, Page2)
+pdf_files = [f for f in current_dir.iterdir() if f.suffix.lower() == '.pdf']
+pdf_files.sort()
+
+if not pdf_files:
+    print("No PDFs found! Please drag your PDF files into the PyCharm sidebar.")
+else:
+    for pdf in pdf_files:
+        print(f"Adding to merger: {pdf.name}")
+        # We convert the Path to a string so the library can read it
+        merger.append(str(pdf))
+
+    # 4. Save the final combined file
+    output_filename = "combined_docs.pdf"
+    merger.write(output_filename)
+    merger.close()
+
+    print(f"\n✅ Success! All PDFs merged into: {output_filename}")
